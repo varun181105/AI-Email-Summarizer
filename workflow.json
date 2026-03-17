@@ -1,0 +1,186 @@
+{
+  "name": "AI Email Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "31f9050a-42c5-4613-b0aa-cfe44e29677e",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IB8qWY71XLd63R4x",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Summarize the following email in 3 short bullet points.\n\nSubject:\n{{$json.snippet}}\n\nEmail Content:\n{{$json.snippet}}\n\nMake the summary clear and concise."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8a814361-1b98-4b58-a26f-5eca72b8c5fd",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vWJaKPqLF18WP6Lm",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1fclOWu33C5lKnWxJgjWmNxWAruAOa300FKc3NezktT4",
+          "mode": "list",
+          "cachedResultName": "AI_Email_Summaries",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fclOWu33C5lKnWxJgjWmNxWAruAOa300FKc3NezktT4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fclOWu33C5lKnWxJgjWmNxWAruAOa300FKc3NezktT4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "DATE": "={{$now}}",
+            "SENDER": "={{$json.from}}",
+            "SUBJECT ": "={{$json.subject}}",
+            "SUMMARY": "={{$json.text}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "DATE",
+              "displayName": "DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENDER",
+              "displayName": "SENDER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SUBJECT ",
+              "displayName": "SUBJECT ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SUMMARY",
+              "displayName": "SUMMARY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        0
+      ],
+      "id": "5dadc4ea-b298-4fc7-8e57-f2a6c6fd56c7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3QCPx9iKhDyNitsX",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0e85aa1f-fb26-40f8-b26d-8b8e5abfe497",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d2e231abdfc8c931bed175e8411b1093f89c27cdba2edf7c4ae803a6c14fb74f"
+  },
+  "id": "CpEnVhjB2sB1Rp0Z",
+  "tags": []
+}
